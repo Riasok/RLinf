@@ -48,11 +48,12 @@ if libero_type == "pro":
 elif libero_type == "plus":
     try:
         from liberoplus.liberoplus.envs import OffScreenRenderEnv
-    except ImportError as e:
-        print(
-            f"[Venv] Warning: LIBERO_TYPE=plus but import failed ({e}). Falling back to standard libero..."
-        )
-        from libero.libero.envs import OffScreenRenderEnv
+    except ImportError as exc:
+        raise ImportError(
+            "LIBERO_TYPE=plus was requested, but its environment could not be "
+            "imported. Install rlinf-liberoplus and its ImageMagick runtime; "
+            "refusing to silently run standard LIBERO instead."
+        ) from exc
 
 else:
     try:

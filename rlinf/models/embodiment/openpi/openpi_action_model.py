@@ -716,11 +716,100 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
             "actions": actions.to(torch.float32).to(device),
         }
 
+    def _online_csd_velocity(
+        self,
+        forward_inputs: dict[str, torch.Tensor],
+        x_t: torch.Tensor,
+        flow_time: torch.Tensor,
+    ) -> torch.Tensor:
+        """Evaluate the policy velocity field for stored on-policy observations."""
+        observation = self.input_transform(forward_inputs, transpose=False)
+        observation = _model.Observation.from_dict(observation)
+        images, img_masks, lang_tokens, lang_masks, state = (
+            self._preprocess_observation(observation, train=False)
+        )
+        device = x_t.device
+        images = [image.to(device) for image in images]
+        img_masks = [mask.to(device) for mask in img_masks]
+        state = state.to(device)
+        _, prefix_pad_masks, past_key_values = self._build_prefix_cache(
+            images, img_masks, lang_tokens, lang_masks
+        )
+        velocity, _ = self.get_velocity(
+            state, x_t, flow_time, prefix_pad_masks, past_key_values
+        )
+        return velocity
+
+    def online_csd_forward(
+        self,
+        student_forward_inputs: dict[str, torch.Tensor],
+        teacher_action: torch.Tensor,
+        offset: int,
+    ) -> dict[str, torch.Tensor]:
+        """Distill a better-informed next chunk with conditional flow matching.
+
+        Consecutive rollout chunks are separated by ``offset`` executed actions.
+        The prefix of the later chunk therefore describes the same physical times
+        as the suffix of the current chunk, but is conditioned on a more recent
+        observation. We use that aligned prefix as a detached pseudo-target and
+        apply the native OpenPI conditional flow-matching loss to the current
+        observation. Gradients flow only through the current student velocity.
+        """
+        student_action = student_forward_inputs["model_action"].reshape(
+            -1, self.config.action_horizon, self.config.action_dim
+        )
+        teacher_action = teacher_action.reshape(
+            -1, self.config.action_horizon, self.config.action_dim
+        )
+        device = next(self.parameters()).device
+        student_action = student_action.to(device=device, dtype=torch.float32).detach()
+        teacher_action = teacher_action.to(device=device, dtype=torch.float32).detach()
+        horizon = self.config.action_horizon
+        if not 0 < offset < horizon:
+            raise ValueError(
+                f"Online CSD offset must be in (0, {horizon}), got {offset}"
+            )
+
+        overlap = horizon - offset
+        pseudo_target = student_action.clone()
+        pseudo_target[:, offset:horizon] = teacher_action[:, :overlap]
+        flow_noise = self.sample_noise(pseudo_target.shape, device)
+        flow_time = self.sample_time(pseudo_target.shape[0], device)
+        time_expanded = flow_time[:, None, None]
+        student_x_t = time_expanded * flow_noise + (1 - time_expanded) * pseudo_target
+        student_velocity = self._online_csd_velocity(
+            student_forward_inputs, student_x_t, flow_time
+        )
+        env_dim = self.config.action_env_dim
+        student_overlap = student_velocity[:, offset:horizon, :env_dim]
+        flow_target = (
+            flow_noise[:, offset:horizon, :env_dim]
+            - teacher_action[:, :overlap, :env_dim]
+        ).detach()
+        csd_loss = F.mse_loss(student_overlap, flow_target)
+        with torch.no_grad():
+            action_discrepancy = F.mse_loss(
+                student_action[:, offset:horizon, :env_dim],
+                teacher_action[:, :overlap, :env_dim],
+            )
+        return {
+            "csd_loss": csd_loss,
+            "csd_action_discrepancy": action_discrepancy,
+            "csd_flow_target_norm": flow_target.square().mean().sqrt(),
+            "csd_student_velocity_norm": student_overlap.square().mean().sqrt(),
+        }
+
     def default_forward(
         self,
         forward_inputs: dict[str, torch.Tensor],
         **kwargs,
     ) -> dict[str, Any]:
+        if kwargs.get("csd_only", False):
+            return self.online_csd_forward(
+                forward_inputs,
+                kwargs["csd_teacher_action"],
+                int(kwargs["csd_offset"]),
+            )
         # get kwargs
         compute_values = kwargs.get("compute_values", False)
         chains = forward_inputs["chains"]

@@ -22,3 +22,10 @@ rlinf/envs/maniskill/assets
 PKG-INFO
 *.egg-info/
 .claude/settings.json
+
+# Local π0.5 LIBERO baseline artifacts
+.env
+checkpoints/
+datasets/
+.runtime_cache/
+logs/

@@ -325,6 +325,8 @@ class Cluster:
         )
 
         try:
+            if os.environ.get("RLINF_FORCE_LOCAL_RAY") == "1":
+                raise ConnectionError("Local Ray cluster explicitly requested")
             # First try to connect to an existing Ray cluster
             ray_init_kwargs: dict[str, Any] = {
                 "address": "auto",

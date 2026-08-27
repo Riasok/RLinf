@@ -127,6 +127,7 @@ class LiberoEnv(gym.Env):
         self.task_id_filter = cfg.get("task_id_filter", None)
         if self.task_id_filter is not None:
             self.task_id_filter = list(self.task_id_filter)
+        self.num_trials_per_task = cfg.get("num_trials_per_task", None)
 
         self.ignore_terminations = cfg.ignore_terminations
         self.auto_reset = cfg.auto_reset
@@ -429,10 +430,29 @@ class LiberoEnv(gym.Env):
             self.total_num_group_envs += task_num_trials
         self.cumsum_trial_id_bins = np.cumsum(self.trial_id_bins)
 
-        if self.task_id_filter is not None:
+        if self.num_trials_per_task is not None:
+            if not isinstance(self.num_trials_per_task, (int, np.integer)):
+                raise ValueError(
+                    "num_trials_per_task must be a positive int or null, got "
+                    f"{type(self.num_trials_per_task).__name__}: "
+                    f"{self.num_trials_per_task}"
+                )
+            self.num_trials_per_task = int(self.num_trials_per_task)
+            if self.num_trials_per_task <= 0:
+                raise ValueError(
+                    "num_trials_per_task must be positive, got "
+                    f"{self.num_trials_per_task}"
+                )
+
+        if self.task_id_filter is not None or self.num_trials_per_task is not None:
             num_tasks = len(self.trial_id_bins)
             validated_tids = []
-            for tid in self.task_id_filter:
+            candidate_tids = (
+                self.task_id_filter
+                if self.task_id_filter is not None
+                else range(num_tasks)
+            )
+            for tid in candidate_tids:
                 if not isinstance(tid, (int, np.integer)):
                     raise ValueError(
                         f"task_id_filter must contain ints, got "
@@ -451,6 +471,8 @@ class LiberoEnv(gym.Env):
             for tid in validated_tids:
                 start = self.cumsum_trial_id_bins[tid - 1] if tid > 0 else 0
                 end = self.cumsum_trial_id_bins[tid]
+                if self.num_trials_per_task is not None:
+                    end = min(end, start + self.num_trials_per_task)
                 self._valid_reset_state_ids.extend(range(start, end))
             self._valid_reset_state_ids = np.array(self._valid_reset_state_ids)
         else:
@@ -864,16 +886,17 @@ class LiberoEnv(gym.Env):
 
         new_reset_state_ids = self._get_ordered_reset_state_ids(len(env_idx))
         valid_mask = new_reset_state_ids >= 0
-        env_to_reset = env_idx[valid_mask]
-        if len(env_to_reset) > 0:
-            self.reset_state_ids[env_to_reset] = new_reset_state_ids[valid_mask]
-            obs, infos = self.reset(
-                env_idx=env_to_reset,
-                reset_state_ids=self.reset_state_ids[env_to_reset],
-            )
-        else:
-            obs = _final_obs
-            infos = {}
+        # A finished simulator must always be reset before it is stepped again.
+        # Once this rank exhausts its unique eval pool, recycle its current reset
+        # state as a safe placeholder. The duplicate is excluded by count_mask,
+        # while slower unique trials on other lanes can finish normally.
+        reset_state_ids = self.reset_state_ids[env_idx].copy()
+        reset_state_ids[valid_mask] = new_reset_state_ids[valid_mask]
+        self.reset_state_ids[env_idx] = reset_state_ids
+        obs, infos = self.reset(
+            env_idx=env_idx,
+            reset_state_ids=reset_state_ids,
+        )
 
         infos["final_observation"] = final_obs
         infos["final_info"] = final_info

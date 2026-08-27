@@ -126,6 +126,57 @@ def process_nested_dict_for_train(nested_dict, shuffle_id):
     return ret_dict
 
 
+def _shift_time_tensor(value: torch.Tensor) -> torch.Tensor:
+    """Align each rollout item with the next chunk along the time dimension."""
+    if value.shape[0] < 2:
+        raise ValueError("Online CSD requires at least two rollout chunk steps.")
+    return torch.cat([value[1:], value[-1:]], dim=0)
+
+
+def _select_nested_batch(value, indices: torch.Tensor):
+    if isinstance(value, torch.Tensor):
+        return value.index_select(0, indices)
+    if isinstance(value, dict):
+        return {
+            key: _select_nested_batch(nested, indices) for key, nested in value.items()
+        }
+    raise TypeError(f"Unsupported online CSD batch field type: {type(value)}")
+
+
+def attach_online_csd_pairs(
+    rollout_batch: dict[str, torch.Tensor],
+) -> dict[str, torch.Tensor]:
+    """Attach episode-safe next-chunk teacher inputs before PPO time shuffling."""
+    forward_inputs = rollout_batch.get("forward_inputs")
+    if not isinstance(forward_inputs, dict) or "model_action" not in forward_inputs:
+        raise ValueError(
+            "Online CSD requires rollout forward_inputs with model_action."
+        )
+
+    model_action = forward_inputs["model_action"]
+    time_dim, batch_dim = model_action.shape[:2]
+    if time_dim < 2:
+        raise ValueError("Online CSD requires at least two rollout chunk steps.")
+
+    chunk_valid = torch.ones(
+        (time_dim, batch_dim), dtype=torch.bool, device=model_action.device
+    )
+    loss_mask = rollout_batch.get("loss_mask")
+    if isinstance(loss_mask, torch.Tensor):
+        chunk_valid &= loss_mask[:time_dim].reshape(time_dim, batch_dim, -1).any(-1)
+
+    dones = rollout_batch.get("dones")
+    if not isinstance(dones, torch.Tensor):
+        raise ValueError("Online CSD requires rollout dones for episode-safe pairing.")
+    chunk_done = dones[:time_dim].reshape(time_dim, batch_dim, -1).any(-1)
+
+    pair_mask = torch.zeros_like(chunk_valid)
+    pair_mask[:-1] = chunk_valid[:-1] & chunk_valid[1:] & ~chunk_done[:-1]
+    rollout_batch["csd_pair_mask"] = pair_mask.unsqueeze(-1)
+    rollout_batch["csd_teacher_action"] = _shift_time_tensor(model_action)
+    return rollout_batch
+
+
 def trim_nested_tensor_time_dim(value, target_steps: int, key_path=()):
     if value is None:
         return None
@@ -1090,6 +1141,25 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
         if self.enable_sft_co_train:
             self._build_sft_data_loader()
 
+        self.enable_online_csd = cfg.algorithm.get("csd_enabled", False)
+        self.csd_beta = float(cfg.algorithm.get("csd_beta", 0.0))
+        self.csd_offset = int(
+            cfg.algorithm.get("csd_offset", cfg.actor.model.num_action_chunks)
+        )
+        self.csd_micro_batch_size = int(cfg.algorithm.get("csd_micro_batch_size", 1))
+        if self.enable_online_csd:
+            if SupportedModel(cfg.actor.model.model_type) != SupportedModel.OPENPI:
+                raise ValueError("Online PPO-CSD currently supports only OpenPI.")
+            if self.csd_beta <= 0:
+                raise ValueError("algorithm.csd_beta must be positive.")
+            if self.csd_micro_batch_size <= 0:
+                raise ValueError("algorithm.csd_micro_batch_size must be positive.")
+            if self.csd_offset != int(cfg.actor.model.num_action_chunks):
+                raise ValueError(
+                    "Online CSD pairs consecutive rollout chunks, so csd_offset "
+                    "must equal actor.model.num_action_chunks."
+                )
+
         # create weight syncer
         weight_syncer_cfg = OmegaConf.select(cfg, "weight_syncer")
         self.weight_syncer = WeightSyncer.create(weight_syncer_cfg)
@@ -1133,7 +1203,14 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
 
         if self.cfg.runner.get("ckpt_path", None):
             model_dict = torch.load(self.cfg.runner.ckpt_path)
-            model.load_state_dict(model_dict)
+            strict = self.cfg.runner.get("ckpt_strict", True)
+            incompatible = model.load_state_dict(model_dict, strict=strict)
+            if not strict:
+                self.logger.warning(
+                    "Loaded runner.ckpt_path non-strictly; missing=%s unexpected=%s",
+                    incompatible.missing_keys,
+                    incompatible.unexpected_keys,
+                )
 
         return model
 
@@ -1292,6 +1369,9 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
                 )
             else:
                 rollout_batch["loss_mask"] = reward_filter_mask
+
+        if self.enable_online_csd:
+            rollout_batch = attach_online_csd_pairs(rollout_batch)
 
         return rollout_batch
 
@@ -1707,7 +1787,64 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
         with backward_ctx:
             self.grad_scaler.scale(loss).backward()
 
-        metrics_data["actor/total_loss"] = loss.detach().item()
+        csd_scaled_loss = torch.zeros_like(loss.detach())
+        if self.enable_online_csd:
+            csd_pair_mask = (
+                micro_batch["csd_pair_mask"]
+                .reshape(micro_batch["csd_pair_mask"].shape[0], -1)
+                .any(-1)
+            )
+            valid_indices = torch.nonzero(csd_pair_mask, as_tuple=False).flatten()
+            valid_pair_count = int(valid_indices.numel())
+            if valid_pair_count == 0:
+                selected_indices = torch.zeros(
+                    1, dtype=torch.long, device=csd_pair_mask.device
+                )
+                active_scale = 0.0
+            else:
+                selected_indices = valid_indices[: self.csd_micro_batch_size]
+                active_scale = 1.0
+
+            csd_student_inputs = _select_nested_batch(forward_inputs, selected_indices)
+            csd_teacher_action = micro_batch["csd_teacher_action"].index_select(
+                0, selected_indices
+            )
+            with self.amp_context:
+                csd_output = self.model(
+                    forward_inputs=csd_student_inputs,
+                    csd_only=True,
+                    csd_teacher_action=csd_teacher_action,
+                    csd_offset=self.csd_offset,
+                    compute_values=False,
+                    use_cache=False,
+                )
+                csd_raw_loss = csd_output["csd_loss"] * active_scale
+                csd_weighted_loss = self.csd_beta * csd_raw_loss
+                csd_scaled_loss = csd_weighted_loss / self.gradient_accumulation
+
+            csd_backward_ctx = self.before_micro_batch(
+                self.model, is_last_micro_batch=is_last
+            )
+            with csd_backward_ctx:
+                self.grad_scaler.scale(csd_scaled_loss).backward()
+
+            metrics_data["actor/csd_loss"] = csd_raw_loss.detach().item()
+            metrics_data["actor/csd_weighted_loss"] = csd_weighted_loss.detach().item()
+            metrics_data["actor/csd_pair_count"] = min(
+                valid_pair_count, self.csd_micro_batch_size
+            )
+            for key in [
+                "csd_action_discrepancy",
+                "csd_flow_target_norm",
+                "csd_student_velocity_norm",
+            ]:
+                metrics_data[f"actor/{key}"] = (
+                    csd_output[key].detach().item() * active_scale
+                )
+
+        metrics_data["actor/total_loss"] = (
+            loss.detach() + csd_scaled_loss.detach()
+        ).item()
         append_to_dict(metrics, metrics_data)
 
     def set_global_step(self, global_step: int) -> None:

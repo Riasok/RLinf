@@ -51,12 +51,12 @@ elif libero_type == "plus":
     try:
         import liberoplus.liberoplus.benchmark as benchmark
         from liberoplus.liberoplus.benchmark import Benchmark
-    except ImportError:
-        print(
-            "[Utils] Warning: LIBERO_TYPE=plus but 'liberoplus' not found. Falling back to 'libero'."
-        )
-        import libero.libero.benchmark as benchmark
-        from libero.libero.benchmark import Benchmark
+    except ImportError as exc:
+        raise ImportError(
+            "LIBERO_TYPE=plus was requested, but LIBERO-Plus could not be "
+            "imported. Install rlinf-liberoplus and its ImageMagick runtime; "
+            "refusing to silently run standard LIBERO instead."
+        ) from exc
 
 else:
     try:

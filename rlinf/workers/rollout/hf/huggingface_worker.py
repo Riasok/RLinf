@@ -37,6 +37,7 @@ from rlinf.models import get_model
 from rlinf.models.embodiment.base_policy import BasePolicy
 from rlinf.scheduler import Channel, Cluster, Worker, split_channel_message
 from rlinf.utils.placement import HybridComponentPlacement
+from rlinf.utils.utils import seed_everything
 
 
 class MultiStepRolloutWorker(Worker):
@@ -148,7 +149,14 @@ class MultiStepRolloutWorker(Worker):
 
         if self.cfg.runner.get("ckpt_path", None):
             model_dict = torch.load(self.cfg.runner.ckpt_path)
-            self.hf_model.load_state_dict(model_dict)
+            strict = self.cfg.runner.get("ckpt_strict", True)
+            incompatible = self.hf_model.load_state_dict(model_dict, strict=strict)
+            if not strict:
+                self.logger.warning(
+                    "Loaded runner.ckpt_path non-strictly; missing=%s unexpected=%s",
+                    incompatible.missing_keys,
+                    incompatible.unexpected_keys,
+                )
 
         rlt_feature_model_config = OmegaConf.select(
             self.cfg, "rollout.rlt_feature_model", default=None
@@ -191,6 +199,12 @@ class MultiStepRolloutWorker(Worker):
         self.setup_sample_params()
         if self.enable_offload:
             self.offload_model()
+
+        # Model construction and CUDA-graph capture may consume RNG state. Reset it
+        # immediately before rollouts so matched runs with the same seed and worker
+        # topology generate the same initial stochastic action samples.
+        self.rollout_seed = seed_everything(int(self.cfg.actor.seed) + self._rank)
+        self.logger.info("Initialized rollout RNG with seed %d", self.rollout_seed)
 
     def setup_sample_params(self):
         # sampling parameters for rollout

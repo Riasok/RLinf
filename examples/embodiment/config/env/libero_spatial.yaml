@@ -26,6 +26,10 @@ use_ordered_reset_state_ids: False
 # if set null, the initial states will be sampled from the whole libero-spatial suite. )
 specific_reset_id: null # can be a number or null.
 
+# Optionally cap the number of initialization trials used for each task.
+# LIBERO-Plus's official evaluation protocol uses one trial per perturbed task.
+num_trials_per_task: null
+
 video_cfg:
   save_video: True
   info_on_video: True
