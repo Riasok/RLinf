@@ -1,3 +1,8 @@
+> **Note:** this repository is a derivative work of [RLinf](https://github.com/RLinf/RLinf),
+> redistributed under Apache-2.0 (see `LICENSE` and `NOTICE`). It adds the π0.5 LIBERO
+> PPO-CSD experiments and evaluation harness — see `research/` for protocols and
+> `evaluations/libero/` for the evaluation configuration. Upstream README follows unchanged.
+
 <div align="center">
   <img src="https://github.com/RLinf/misc/raw/main/pic/logo_white.svg" alt="RLinf-logo" width="600"/>
 </div>

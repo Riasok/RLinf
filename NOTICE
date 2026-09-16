@@ -1,0 +1,19 @@
+RLinf
+Copyright the RLinf Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+This repository is a derivative work of RLinf
+(https://github.com/RLinf/RLinf), redistributed under Apache-2.0.
+
+Modifications (c) 2026 Riasok, comprising the pi0.5 LIBERO
+reinforcement-learning experiments and evaluation harness:
+online PPO-CSD with advantage/success gating, selective-trainability
+masks, the env-var driven LIBERO evaluation configuration, an
+expert-only BC worker with Spatial 7/3 split tooling, associated
+experiment configs and orchestration scripts, and the protocol notes
+under research/.
