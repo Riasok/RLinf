@@ -288,9 +288,15 @@ def get_model(cfg: DictConfig):
         model = model.to(Worker.torch_device_type)
 
     if cfg.is_lora:
-        from peft import LoraConfig, PeftModel, get_peft_model
+        from peft import (
+            LoraConfig,
+            PeftModel,
+            get_peft_model,
+            inject_adapter_in_model,
+        )
 
         if not hasattr(cfg, "lora_path") or cfg.lora_path is None:
+            lora_target = str(cfg.get("lora_target", "default"))
             lora_config = LoraConfig(
                 r=cfg.lora_rank,
                 lora_alpha=cfg.lora_rank,
@@ -315,7 +321,64 @@ def get_model(cfg: DictConfig):
                 ],
                 init_lora_weights="gaussian",
             )
-            if SupportedModel(model_type) in (
+            if (
+                SupportedModel(model_type) == SupportedModel.OPENPI
+                and lora_target == "action_expert"
+            ):
+                # Parameter-efficient pi0.5 PPO: adapt only attention/FFN
+                # projections in the 300M action expert. In particular, this
+                # excludes PaliGemma, AdaRMS, and action/time projections.
+                action_expert_lora_config = LoraConfig(
+                    r=cfg.lora_rank,
+                    lora_alpha=cfg.lora_rank,
+                    lora_dropout=0.0,
+                    target_modules=[
+                        "q_proj",
+                        "k_proj",
+                        "v_proj",
+                        "o_proj",
+                        "gate_proj",
+                        "up_proj",
+                        "down_proj",
+                    ],
+                    init_lora_weights="gaussian",
+                )
+                # Inject in place instead of wrapping the whole causal-LM.
+                # OpenPI directly calls ``gemma_expert.model`` and requires a
+                # decoder output with ``last_hidden_state``; PeftModelForCausalLM
+                # changes that attribute boundary and returns logits instead.
+                model.paligemma_with_expert.gemma_expert = inject_adapter_in_model(
+                    action_expert_lora_config,
+                    model.paligemma_with_expert.gemma_expert,
+                )
+                for parameter in model.parameters():
+                    parameter.requires_grad = False
+                for name, parameter in model.named_parameters():
+                    if ".lora_A." in name or ".lora_B." in name:
+                        parameter.requires_grad = True
+                if hasattr(model, "value_head"):
+                    for parameter in model.value_head.parameters():
+                        parameter.requires_grad = True
+                trainable_names = [
+                    name for name, p in model.named_parameters() if p.requires_grad
+                ]
+                if not any(".lora_A." in name for name in trainable_names):
+                    raise ValueError(
+                        "action_expert LoRA injection produced no trainable adapters"
+                    )
+                unexpected = [
+                    name
+                    for name in trainable_names
+                    if ".lora_A." not in name
+                    and ".lora_B." not in name
+                    and "value_head" not in name
+                ]
+                if unexpected:
+                    raise ValueError(
+                        "action_expert LoRA left unexpected trainable parameters: "
+                        f"{unexpected[:8]}"
+                    )
+            elif SupportedModel(model_type) in (
                 SupportedModel.OPENPI,
                 SupportedModel.CFG_MODEL,
             ):
@@ -332,6 +395,21 @@ def get_model(cfg: DictConfig):
         if hasattr(model, "value_head"):
             for param in model.value_head.parameters():
                 param.requires_grad = True
+
+    trainability_mask = str(cfg.get("trainability_mask", "all")).lower()
+    if trainability_mask != "all":
+        if SupportedModel(model_type) != SupportedModel.OPENPI:
+            raise ValueError(
+                "trainability_mask is currently supported only for model_type=openpi"
+            )
+        if cfg.get("is_lora", False):
+            raise ValueError(
+                "Combine either LoRA or an AdaRMS trainability mask, not both"
+            )
+        from rlinf.models.trainability import apply_trainability_mask
+
+        report = apply_trainability_mask(model, trainability_mask)
+        model._trainability_mask_report = report.to_dict()
 
     return model
 

@@ -58,6 +58,33 @@ def _repoint_libero_config(libero_module) -> None:
 
 logger = get_logger()
 
+_PRO_BDDL_VALIDITY_CACHE: dict[str, bool] = {}
+
+
+def _is_valid_pro_bddl(path: str) -> bool:
+    """Reject packaged PRO variants whose parsed problem class is inconsistent."""
+    cached = _PRO_BDDL_VALIDITY_CACHE.get(path)
+    if cached is not None:
+        return cached
+
+    try:
+        from liberopro.liberopro.envs import bddl_utils
+
+        declared = bddl_utils.get_problem_info(path)["problem_name"]
+        parsed = bddl_utils.robosuite_parse_problem(path)["problem_name"]
+        valid = declared == parsed
+    except Exception as exc:
+        logger.warning(f"Skipping malformed LIBERO-PRO BDDL {path}: {exc}")
+        valid = False
+
+    if not valid:
+        logger.warning(
+            f"Skipping LIBERO-PRO BDDL with inconsistent problem class: {path}"
+        )
+    _PRO_BDDL_VALIDITY_CACHE[path] = valid
+    return valid
+
+
 libero_type = get_libero_type()
 
 if libero_type in ["pro", "plus"]:
@@ -320,11 +347,15 @@ class LiberoEnv(gym.Env):
 
                     for sub_dir in all_sub_dirs:
                         target_dir_path = os.path.join(bddl_root, sub_dir)
-                        matches = [
-                            os.path.join(target_dir_path, f)
-                            for f in os.listdir(target_dir_path)
-                            if core_task_name in f and f.endswith(".bddl")
-                        ]
+                        matches = []
+                        for filename in os.listdir(target_dir_path):
+                            if core_task_name not in filename or not filename.endswith(
+                                ".bddl"
+                            ):
+                                continue
+                            candidate = os.path.join(target_dir_path, filename)
+                            if _is_valid_pro_bddl(candidate):
+                                matches.append(candidate)
                         all_candidates.extend(matches)
 
                     if all_candidates:

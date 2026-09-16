@@ -1,0 +1,1 @@
+deprecated/notes/LOCAL_PLUS_SPATIAL_20260906.md

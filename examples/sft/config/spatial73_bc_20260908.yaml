@@ -1,0 +1,56 @@
+defaults:
+  - model/pi0_5@actor.model
+  - hybrid_engines/fsdp@actor.fsdp_config
+  - override hydra/job_logging: stdout
+  - _self_
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  searchpath:
+    - file://${oc.env:EMBODIED_PATH}/config/
+cluster:
+  num_nodes: 1
+  component_placement:
+    actor: 0-3
+runner:
+  task_type: sft
+  max_epochs: -1
+  max_steps: 1800
+  val_check_interval: -1
+  save_interval: 120
+  logger:
+    log_path: /data/minjaeoh/RLinf/logs/20260908-spatial73-bc/train
+    project_name: rlinf-ppo-csd
+    experiment_name: pi05_bc_spatial7_heldout3_matched_updates
+    logger_backends: [tensorboard, wandb]
+data:
+  train_data_paths: /data/minjaeoh/RLinf/datasets/physical-intelligence-libero
+  split_manifest: /data/minjaeoh/RLinf/logs/20260908-spatial73-bc/split.json
+actor:
+  group_name: BCActor
+  training_backend: fsdp
+  micro_batch_size: 16
+  global_batch_size: 2048
+  seed: 42
+  enable_offload: false
+  model:
+    model_path: /data/minjaeoh/RLinf/checkpoints/RLinf-Pi05-LIBERO-SFT
+    num_action_chunks: 5
+    num_steps: 3
+    add_value_head: false
+    openpi:
+      config_name: pi05_libero
+      action_horizon: 10
+      train_expert_only: true
+  optim:
+    lr: 5.0e-6
+    adam_beta1: 0.9
+    adam_beta2: 0.95
+    adam_eps: 1.0e-8
+    weight_decay: 0.01
+    clip_grad: 1.0
+    lr_scheduler: constant
+  fsdp_config:
+    sharding_strategy: no_shard
+    gradient_checkpointing: false

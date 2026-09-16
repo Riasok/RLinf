@@ -16,6 +16,7 @@
 
 import time
 
+import pytest
 import torch
 from omegaconf import OmegaConf
 
@@ -113,3 +114,41 @@ def test_custom_model_registration_with_fsdp_wrap_policy():
     assert wrap_policy is not None
     assert wrap_policy(module=model.block, recurse=False, nonwrapped_numel=0)
     assert wrap_policy(module=model.head, recurse=False, nonwrapped_numel=0)
+
+
+def test_selective_mask_wraps_trainable_leaves_with_non_orig_params():
+    model = _DummyFSDPModel()
+    model._trainability_mask_report = {"mode": "adarms_only"}
+    model.block.proj.weight.requires_grad = False
+    model.block.proj.bias.requires_grad = False
+    fsdp_cfg = OmegaConf.create({"use_orig_params": False})
+
+    wrap_policy = get_fsdp_wrap_policy(
+        module=model,
+        config=fsdp_cfg,
+        is_lora=False,
+        model_type=SupportedModel.OPENPI.value,
+    )
+
+    assert wrap_policy is not None
+    assert wrap_policy(module=model, recurse=True, nonwrapped_numel=0)
+    assert wrap_policy(module=model.head, recurse=False, nonwrapped_numel=0)
+    assert not wrap_policy(
+        module=model.block.proj,
+        recurse=False,
+        nonwrapped_numel=0,
+    )
+
+
+def test_selective_mask_rejects_use_orig_params():
+    model = _DummyFSDPModel()
+    model._trainability_mask_report = {"mode": "exclude_adarms"}
+    fsdp_cfg = OmegaConf.create({"use_orig_params": True})
+
+    with pytest.raises(ValueError, match="require.*use_orig_params=false"):
+        get_fsdp_wrap_policy(
+            module=model,
+            config=fsdp_cfg,
+            is_lora=False,
+            model_type=SupportedModel.OPENPI.value,
+        )

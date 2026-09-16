@@ -349,6 +349,25 @@ class Cluster:
                 "logging_level": Cluster.LOGGING_LEVEL,
                 "namespace": Cluster.NAMESPACE,
             }
+            local_resource_overrides = {
+                "RLINF_LOCAL_RAY_NUM_CPUS": "num_cpus",
+                "RLINF_LOCAL_RAY_OBJECT_STORE_MEMORY_BYTES": "object_store_memory",
+            }
+            for env_name, ray_kwarg in local_resource_overrides.items():
+                raw_value = os.environ.get(env_name)
+                if raw_value is None:
+                    continue
+                try:
+                    value = int(raw_value)
+                except ValueError as exc:
+                    raise ValueError(
+                        f"{env_name} must be a positive integer, got {raw_value!r}."
+                    ) from exc
+                if value <= 0:
+                    raise ValueError(
+                        f"{env_name} must be a positive integer, got {value}."
+                    )
+                ray_init_kwargs[ray_kwarg] = value
             if self._ray_code_sync_fragment is not None:
                 ray_init_kwargs["runtime_env"] = dict(self._ray_code_sync_fragment)
             ray.init(**ray_init_kwargs)

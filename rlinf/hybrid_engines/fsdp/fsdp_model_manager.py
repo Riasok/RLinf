@@ -273,6 +273,13 @@ class FSDPModelManager:
         """
         module = self.model_provider_func()
 
+        trainability_report = getattr(module, "_trainability_mask_report", None)
+        if trainability_report is not None:
+            self._logger.info(
+                "[FSDP] Applied trainability mask before wrapping: %s",
+                trainability_report,
+            )
+
         # Enable gradient checkpointing if configured
         if self._cfg.fsdp_config.get("gradient_checkpointing", False):
             use_reentrant = self._cfg.fsdp_config.get(

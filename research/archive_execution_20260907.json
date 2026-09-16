@@ -1,0 +1,672 @@
+{
+  "checkpoints": [
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_10",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved"
+      ],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_20",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_30",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_40",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_50",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_60",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_70",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349288448
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_80",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349292544
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_90",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260901-libero-long-step90-pro-gpu67/csd_step90_libero_long_pro/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/csd_step90_libero_long_pro/launcher.log",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/csd_step90_libero_long_pro/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/csd_step90_libero_long/launcher.log",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/csd_step90_libero_long/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567/csd_step90_libero_long/tensorboard/config.yaml",
+        "logs/20260831-robot-eval-then-goal/standard/csd_step90_standard_long/launcher.log",
+        "logs/20260831-robot-eval-then-goal/standard/csd_step90_standard_long/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_10",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved"
+      ],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_20",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349288448
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_30",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_40",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349292544
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_50",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_60",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_70",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_80",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20349284352
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_90",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/ppo_step90_libero_long/launcher.log",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/ppo_step90_libero_long/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/ppo_step90_libero_long_pro/launcher.log",
+        "logs/20260901-libero-long-step90-safe-gpu4567-v2/ppo_step90_libero_long_pro/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567/ppo_step90_libero_long/launcher.log",
+        "logs/20260901-libero-long-step90-safe-gpu4567/ppo_step90_libero_long/tensorboard/config.yaml",
+        "logs/20260901-libero-long-step90-safe-gpu4567/ppo_step90_libero_long_pro/tensorboard/config.yaml",
+        "logs/20260831-robot-eval-then-goal/standard/ppo_step90_standard_long/launcher.log",
+        "logs/20260831-robot-eval-then-goal/standard/ppo_step90_standard_long/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20349292544
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_10",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260905-csd-confirmation/plan.json",
+        "logs/20260905-csd-confirmation/results.json",
+        "logs/20260905-csd-confirmation/csd_step10_libero_10_k5_n500/result.json",
+        "logs/20260905-csd-confirmation/csd_step10_libero_10_k5_n500/launcher.log",
+        "logs/20260905-csd-confirmation/csd_step10_libero_10_k5_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-confirmation/csd_step10_long_k10_n500/result.json",
+        "logs/20260905-csd-confirmation/csd_step10_long_k10_n500/launcher.log",
+        "logs/20260905-csd-confirmation/csd_step10_long_k10_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-confirmation/csd_step10_libero_goal_k5_n500/result.json",
+        "logs/20260905-csd-confirmation/csd_step10_libero_goal_k5_n500/launcher.log",
+        "logs/20260905-csd-confirmation/csd_step10_libero_goal_k5_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_spatial/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_goal/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step10_libero_10/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_20",
+      "keep": true,
+      "reasons": [
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_spatial/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_10/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_goal/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step20_libero_object/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_30",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_40",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_50",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_60",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_70",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_80",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260906-local-plus-spatial/lane_2-3.json",
+        "logs/20260906-local-plus-spatial/csd_step80/launcher.log",
+        "logs/20260906-local-plus-spatial/csd_step80/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_plus_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_plus_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_goal/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_goal/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_10/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_10/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_object/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/csd_step80_ns3_standard_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_10/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_spatial/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/csd_step80_libero_goal/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_object/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_object/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_goal/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_goal/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/csd_step80_standard_libero_spatial/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350840832
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_10",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260905-csd-confirmation/plan.json",
+        "logs/20260905-csd-confirmation/results.json",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_goal_k5_n500/result.json",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_goal_k5_n500/launcher.log",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_goal_k5_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_10_k5_n500/result.json",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_10_k5_n500/launcher.log",
+        "logs/20260905-csd-confirmation/ppo_step10_libero_10_k5_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-confirmation/ppo_step10_long_k10_n500/result.json",
+        "logs/20260905-csd-confirmation/ppo_step10_long_k10_n500/launcher.log",
+        "logs/20260905-csd-confirmation/ppo_step10_long_k10_n500/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_spatial/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_goal/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step10_libero_10/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_20",
+      "keep": true,
+      "reasons": [
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_goal/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_spatial/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_10/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step20_libero_object/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_30",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_40",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_50",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_60",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350836736
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_70",
+      "keep": false,
+      "reasons": [],
+      "allocated_bytes": 20350844928
+    },
+    {
+      "path": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_80",
+      "keep": true,
+      "reasons": [
+        "first_or_last_saved",
+        "logs/20260906-local-plus-spatial/lane_0-1.json",
+        "logs/20260906-local-plus-spatial/ppo_step80/launcher.log",
+        "logs/20260906-local-plus-spatial/ppo_step80/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_10/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_10/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_goal/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_goal/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_plus_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_plus_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_object/launcher.log",
+        "logs/20260904-step80-eval-ns3-then-csdgate/diag_step80_ns3_standard_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/results.json",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_10/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_10/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_10/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_goal/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_goal/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_goal/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_object/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_object/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_object/tensorboard/config.yaml",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_spatial/result.json",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_spatial/launcher.log",
+        "logs/20260905-csd-diagnosis/ppo_step80_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_spatial/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_spatial/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_goal/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_goal/tensorboard/config.yaml",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_object/launcher.log",
+        "logs/20260904-step80-eval-NUMSTEPS5-superseded/diag_step80_standard_libero_object/tensorboard/config.yaml"
+      ],
+      "allocated_bytes": 20350836736
+    }
+  ],
+  "delete_count": 24,
+  "reclaim_gib": 454.85643768310547,
+  "state": "finished",
+  "moves": [
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260803-15:55:13-liberoplus_spatial_ppo_openpi_pi05_2gpu",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260803-15:55:13-liberoplus_spatial_ppo_openpi_pi05_2gpu"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260803-15:56:26-liberoplus_spatial_ppo_openpi_pi05_2gpu",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260803-15:56:26-liberoplus_spatial_ppo_openpi_pi05_2gpu"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260803-15:59:31-liberoplus_spatial_ppo_openpi_pi05_2gpu",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260803-15:59:31-liberoplus_spatial_ppo_openpi_pi05_2gpu"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260828-libero_long_ppo_gpu67_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260831-robot-eval-then-goal",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260831-robot-eval-then-goal"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero-long-step90-pro-gpu67",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero-long-step90-pro-gpu67"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero-long-step90-safe-gpu4567",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero-long-step90-safe-gpu4567"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero-long-step90-safe-gpu4567-v2",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero-long-step90-safe-gpu4567-v2"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_gpu67_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_gpu67_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260901-libero_40_ppo_vs_csd_queue",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_vs_csd_queue"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260904-step80-eval-NUMSTEPS5-superseded",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260904-step80-eval-NUMSTEPS5-superseded"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260904-step80-eval-ns3-then-csdgate",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260904-step80-eval-ns3-then-csdgate"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260905-csd-confirmation",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260905-csd-confirmation"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260905-csd-diagnosis",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260905-csd-diagnosis"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260905-libero_40_ppo_csdgate_padv_gpu45_gen10_exec5",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260905-libero_40_ppo_csdgate_padv_gpu45_gen10_exec5"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260905-libero_40_ppo_csdgate_padv_gpu45_resume10",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260905-libero_40_ppo_csdgate_padv_gpu45_resume10"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260905-official-pi0-spatial-ppo",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260905-official-pi0-spatial-ppo"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260906-local-plus-spatial",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260906-local-plus-spatial"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260906-overnight-ppo-controls",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260906-overnight-ppo-controls"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260906-pirl-long10",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260906-pirl-long10"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260906-pirl-long10-gpu03",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260906-pirl-long10-gpu03"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260906-pirl130",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260906-pirl130"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260907-maniskill-cut-eval",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260907-maniskill-cut-eval"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/20260907-maniskill-ood",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/20260907-maniskill-ood"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/maniskill_pi05_memsafe",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/maniskill_pi05_memsafe"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/maniskill_pi05_next",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/maniskill_pi05_next"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/pi05-libero-sft-1000",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/pi05-libero-sft-1000"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/logs/pi05-libero-sft-smoke-data-cache",
+      "new": "/data/minjaeoh/RLinf/deprecated/results/pi05-libero-sft-smoke-data-cache"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/checkpoints/RLinf-Pi05-PPO-LIBERO-130",
+      "new": "/data/minjaeoh/RLinf/deprecated/checkpoints/RLinf-Pi05-PPO-LIBERO-130"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT",
+      "new": "/data/minjaeoh/RLinf/deprecated/checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/checkpoints/RLinf-Pi0-PPO-LIBERO-spatial",
+      "new": "/data/minjaeoh/RLinf/deprecated/checkpoints/RLinf-Pi0-PPO-LIBERO-spatial"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/checkpoints/lerobot-pi05-libero-base",
+      "new": "/data/minjaeoh/RLinf/deprecated/checkpoints/lerobot-pi05-libero-base"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/resume_csdgate_padv_from10.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/resume_csdgate_padv_from10.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/resume_ppo_csd_b1_0_from60.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/resume_ppo_csd_b1_0_from60.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_40_ppo_csddiag_gpu67.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_40_ppo_csddiag_gpu67.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_40_ppo_csdgate_padv_gpu45.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_40_ppo_csdgate_padv_gpu45.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_40_ppo_csdgate_padv_gpu4567.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_40_ppo_csdgate_padv_gpu4567.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_40_ppo_vs_csd_after_eval.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_40_ppo_vs_csd_after_eval.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_long_ppo_csd_gpu2345_gen20_exec10.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_long_ppo_csd_gpu2345_gen20_exec10.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_long_ppo_csd_gpu45_gen10_exec5.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_long_ppo_csd_gpu45_gen10_exec5.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_long_ppo_gpu67_gen10_exec5.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_long_ppo_gpu67_gen10_exec5.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_long_step90_pro_gpu67.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_long_step90_pro_gpu67.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_libero_long_step90_safe_gpu4567.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_libero_long_step90_safe_gpu4567.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_robot_eval_then_goal_queue.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_robot_eval_then_goal_queue.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_step80_eval_ns3_then_csdgate.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_step80_eval_ns3_then_csdgate.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/run_step80_eval_then_csdgate.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/run_step80_eval_then_csdgate.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/stop_runs_at_step80.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/stop_runs_at_step80.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/switch_to_csdgate_at_step80.sh",
+      "new": "/data/minjaeoh/RLinf/deprecated/launchers/switch_to_csdgate_at_step80.sh"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/CSD_DIAGNOSIS_20260905.md",
+      "new": "/data/minjaeoh/RLinf/deprecated/notes/CSD_DIAGNOSIS_20260905.md"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/LOCAL_PLUS_SPATIAL_20260906.md",
+      "new": "/data/minjaeoh/RLinf/deprecated/notes/LOCAL_PLUS_SPATIAL_20260906.md"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/OVERNIGHT_20260906.md",
+      "new": "/data/minjaeoh/RLinf/deprecated/notes/OVERNIGHT_20260906.md"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/PIRL_130_20260906.md",
+      "new": "/data/minjaeoh/RLinf/deprecated/notes/PIRL_130_20260906.md"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/PIRL_LONG10_20260906.md",
+      "new": "/data/minjaeoh/RLinf/deprecated/notes/PIRL_LONG10_20260906.md"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_10_overnight_controls.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_10_overnight_controls.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_10_ppo_csd_b1_pi05_gpu45_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_10_ppo_csd_b1_pi05_gpu45_gen10_exec5_100steps.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_10_ppo_csd_pi05_gpu2345_gen20_exec10.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_10_ppo_csd_pi05_gpu2345_gen20_exec10.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_10_ppo_pi05_gpu67_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_10_ppo_pi05_gpu67_gen10_exec5_100steps.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_130_ppo_pi05_gpu47_20260906.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_130_ppo_pi05_gpu47_20260906.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_40_ppo_csd_b1_pi05_gpu45_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_40_ppo_csd_b1_pi05_gpu45_gen10_exec5_100steps.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_40_ppo_csdgate_padv_pi05_gpu4567_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_40_ppo_csdgate_padv_pi05_gpu4567_gen10_exec5_100steps.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_40_ppo_csdgate_padv_pi05_gpu45_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_40_ppo_csdgate_padv_pi05_gpu45_gen10_exec5_100steps.yaml"
+    },
+    {
+      "old": "/data/minjaeoh/RLinf/examples/embodiment/config/libero_40_ppo_pi05_gpu67_gen10_exec5_100steps.yaml",
+      "new": "/data/minjaeoh/RLinf/deprecated/configs/libero_40_ppo_pi05_gpu67_gen10_exec5_100steps.yaml"
+    }
+  ],
+  "deleted": [
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_20",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_30",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_40",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_50",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_60",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_70",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_csd_b1_gpu45_gen10_exec5/libero_long_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260828/checkpoints/global_step_80",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_20",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_30",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_40",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_50",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_60",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_70",
+    "/data/minjaeoh/RLinf/deprecated/results/20260828-libero_long_ppo_gpu67_gen10_exec5/libero_long_ppo_seed42_gpu67_gen10_exec5_20260828/checkpoints/global_step_80",
+    "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_30",
+    "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_40",
+    "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_50",
+    "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_60",
+    "/data/minjaeoh/RLinf/deprecated/results/20260901-libero_40_ppo_csd_b1_gpu45_gen10_exec5/libero_40_ppo_csd_b1_seed42_gpu45_gen10_exec5_20260901/checkpoints/global_step_70",
+    "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_30",
+    "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_40",
+    "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_50",
+    "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_60",
+    "/data/minjaeoh/RLinf/deprecated/results/20260902-libero_40_ppo_csddiag_gpu67_gen10_exec5/libero_40_ppo_csddiag_seed42_gpu67_gen10_exec5_20260902/checkpoints/global_step_70"
+  ]
+}

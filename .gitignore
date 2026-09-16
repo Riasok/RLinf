@@ -28,4 +28,17 @@ PKG-INFO
 checkpoints/
 datasets/
 .runtime_cache/
+.native-deps/
+.runtime/
 logs/
+
+# Archived experiment artifacts remain local, never Git payloads.
+deprecated/results/
+deprecated/checkpoints/
+.venv-*/
+
+# Simulator scratch output
+MUJOCO_LOG.TXT
+
+# Vendored third-party checkout (not our code; keep out of Git)
+third_party/lerobot_latest/

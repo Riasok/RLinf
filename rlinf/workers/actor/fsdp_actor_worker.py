@@ -168,12 +168,102 @@ def attach_online_csd_pairs(
     dones = rollout_batch.get("dones")
     if not isinstance(dones, torch.Tensor):
         raise ValueError("Online CSD requires rollout dones for episode-safe pairing.")
-    chunk_done = dones[:time_dim].reshape(time_dim, batch_dim, -1).any(-1)
+    if dones.shape[0] != time_dim + 1:
+        raise ValueError("Online CSD expects T+1 dones for T action chunks.")
+    # dones[0] precedes the rollout; dones[t+1] records action chunk t.
+    action_dones = dones[1:].reshape(time_dim, batch_dim, -1).bool()
+    chunk_done = action_dones.any(-1)
 
     pair_mask = torch.zeros_like(chunk_valid)
     pair_mask[:-1] = chunk_valid[:-1] & chunk_valid[1:] & ~chunk_done[:-1]
     rollout_batch["csd_pair_mask"] = pair_mask.unsqueeze(-1)
+    rollout_batch["csd_candidate_pair_mask"] = pair_mask.unsqueeze(-1)
     rollout_batch["csd_teacher_action"] = _shift_time_tensor(model_action)
+    if isinstance(loss_mask, torch.Tensor):
+        # Preserve action-level validity even when PPO uses a chunk-level mask.
+        # Include the terminating action, but exclude all later actions.
+        action_mask = (action_dones.long().cumsum(-1) - action_dones.long()) == 0
+        action_mask &= loss_mask[:time_dim].reshape(time_dim, batch_dim, -1).bool()
+        rollout_batch["csd_teacher_action_mask"] = _shift_time_tensor(action_mask)
+    return rollout_batch
+
+
+def apply_online_csd_gate(
+    rollout_batch: dict[str, torch.Tensor],
+    gate_mode: str = "constant",
+    gate_threshold: float = 0.0,
+) -> dict[str, torch.Tensor]:
+    """Gate CSD pairs using evidence attached to the future rollout chunk.
+
+    Constant reproduces the original one-way CSD objective. Success broadcasts
+    a positive episodic return to chunks in that episode, while
+    positive_advantage uses the sign of the future chunk's mean advantage.
+    The gate is shifted so the pair at time t reads evidence from its teacher
+    chunk at t + K.
+    """
+    valid_modes = {"constant", "success", "positive_advantage"}
+    if gate_mode not in valid_modes:
+        raise ValueError(
+            "algorithm.csd_gate_mode must be one of constant, success, or "
+            f"positive_advantage; got {gate_mode!r}."
+        )
+
+    candidate_mask = rollout_batch["csd_candidate_pair_mask"].squeeze(-1).bool()
+    time_dim, batch_dim = candidate_mask.shape
+    device = candidate_mask.device
+    chunk_valid = torch.ones_like(candidate_mask)
+    loss_mask = rollout_batch.get("loss_mask")
+    if isinstance(loss_mask, torch.Tensor):
+        chunk_valid = loss_mask[:time_dim].reshape(time_dim, batch_dim, -1).any(-1)
+
+    if gate_mode == "constant":
+        chunk_gate = torch.ones_like(candidate_mask)
+    elif gate_mode == "positive_advantage":
+        advantages = rollout_batch.get("advantages")
+        if not isinstance(advantages, torch.Tensor):
+            raise ValueError("Positive-advantage gated-CSD requires advantages.")
+        advantages = advantages[:time_dim].reshape(time_dim, batch_dim, -1)
+        if isinstance(loss_mask, torch.Tensor):
+            action_mask = loss_mask[:time_dim].reshape(time_dim, batch_dim, -1)
+            if action_mask.shape[-1] == 1 and advantages.shape[-1] != 1:
+                action_mask = action_mask.expand_as(advantages)
+            elif action_mask.shape[-1] != advantages.shape[-1]:
+                raise ValueError(
+                    "CSD advantage and loss-mask action dimensions do not align."
+                )
+            denominator = action_mask.sum(-1).clamp_min(1)
+            chunk_advantage = (advantages * action_mask).sum(-1) / denominator
+        else:
+            chunk_advantage = advantages.mean(-1)
+        chunk_gate = chunk_advantage > gate_threshold
+    else:
+        rewards = rollout_batch.get("rewards")
+        dones = rollout_batch.get("dones")
+        if not isinstance(rewards, torch.Tensor) or not isinstance(dones, torch.Tensor):
+            raise ValueError("Success-gated CSD requires rewards and dones.")
+        rewards = rewards[:time_dim].reshape(time_dim, batch_dim, -1)
+        if isinstance(loss_mask, torch.Tensor):
+            reward_mask = loss_mask[:time_dim].reshape(time_dim, batch_dim, -1)
+            if reward_mask.shape[-1] == 1 and rewards.shape[-1] != 1:
+                reward_mask = reward_mask.expand_as(rewards)
+            rewards = rewards * reward_mask
+        chunk_returns = rewards.sum(-1)
+        chunk_done = dones[1 : time_dim + 1].reshape(time_dim, batch_dim, -1).any(-1)
+        episode_id = chunk_done.long().cumsum(0) - chunk_done.long()
+        episode_key = episode_id + torch.arange(batch_dim, device=device).unsqueeze(
+            0
+        ) * (time_dim + 1)
+        episode_returns = torch.zeros(
+            batch_dim * (time_dim + 1),
+            device=device,
+            dtype=chunk_returns.dtype,
+        )
+        episode_returns.scatter_add_(0, episode_key.flatten(), chunk_returns.flatten())
+        chunk_gate = episode_returns[episode_key] > gate_threshold
+
+    future_gate = _shift_time_tensor(chunk_gate & chunk_valid)
+    rollout_batch["csd_gate"] = future_gate.unsqueeze(-1)
+    rollout_batch["csd_pair_mask"] = (candidate_mask & future_gate).unsqueeze(-1)
     return rollout_batch
 
 
@@ -1142,18 +1232,37 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
             self._build_sft_data_loader()
 
         self.enable_online_csd = cfg.algorithm.get("csd_enabled", False)
+        self.enable_online_csd_diagnostics = cfg.algorithm.get(
+            "csd_diagnostics_enabled", False
+        )
+        self.compute_online_csd = (
+            self.enable_online_csd or self.enable_online_csd_diagnostics
+        )
         self.csd_beta = float(cfg.algorithm.get("csd_beta", 0.0))
         self.csd_offset = int(
             cfg.algorithm.get("csd_offset", cfg.actor.model.num_action_chunks)
         )
         self.csd_micro_batch_size = int(cfg.algorithm.get("csd_micro_batch_size", 1))
-        if self.enable_online_csd:
+        self.csd_gate_mode = str(cfg.algorithm.get("csd_gate_mode", "constant")).lower()
+        self.csd_gate_threshold = float(cfg.algorithm.get("csd_gate_threshold", 0.0))
+        if self.compute_online_csd:
             if SupportedModel(cfg.actor.model.model_type) != SupportedModel.OPENPI:
                 raise ValueError("Online PPO-CSD currently supports only OpenPI.")
-            if self.csd_beta <= 0:
+            if self.enable_online_csd and self.csd_beta <= 0:
                 raise ValueError("algorithm.csd_beta must be positive.")
+            if self.enable_online_csd_diagnostics and self.csd_beta != 0:
+                raise ValueError(
+                    "Diagnostic-only CSD requires algorithm.csd_beta=0 so it "
+                    "cannot alter PPO gradients."
+                )
             if self.csd_micro_batch_size <= 0:
                 raise ValueError("algorithm.csd_micro_batch_size must be positive.")
+            if self.csd_gate_mode not in {
+                "constant",
+                "success",
+                "positive_advantage",
+            }:
+                raise ValueError("Unsupported algorithm.csd_gate_mode.")
             if self.csd_offset != int(cfg.actor.model.num_action_chunks):
                 raise ValueError(
                     "Online CSD pairs consecutive rollout chunks, so csd_offset "
@@ -1370,7 +1479,7 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
             else:
                 rollout_batch["loss_mask"] = reward_filter_mask
 
-        if self.enable_online_csd:
+        if self.compute_online_csd:
             rollout_batch = attach_online_csd_pairs(rollout_batch)
 
         return rollout_batch
@@ -1408,6 +1517,12 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
         if kwargs["loss_mask_sum"] is not None:
             self.rollout_batch.update({"loss_mask_sum": kwargs["loss_mask_sum"]})
 
+        if self.compute_online_csd:
+            self.rollout_batch = apply_online_csd_gate(
+                self.rollout_batch,
+                gate_mode=self.csd_gate_mode,
+                gate_threshold=self.csd_gate_threshold,
+            )
         rollout_metrics = compute_rollout_metrics(self.rollout_batch)
         return rollout_metrics
 
@@ -1788,12 +1903,18 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
             self.grad_scaler.scale(loss).backward()
 
         csd_scaled_loss = torch.zeros_like(loss.detach())
-        if self.enable_online_csd:
+        if self.compute_online_csd:
             csd_pair_mask = (
                 micro_batch["csd_pair_mask"]
                 .reshape(micro_batch["csd_pair_mask"].shape[0], -1)
                 .any(-1)
             )
+            csd_candidate_mask = (
+                micro_batch["csd_candidate_pair_mask"]
+                .reshape(micro_batch["csd_candidate_pair_mask"].shape[0], -1)
+                .any(-1)
+            )
+            candidate_pair_count = int(csd_candidate_mask.sum().item())
             valid_indices = torch.nonzero(csd_pair_mask, as_tuple=False).flatten()
             valid_pair_count = int(valid_indices.numel())
             if valid_pair_count == 0:
@@ -1809,29 +1930,49 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
             csd_teacher_action = micro_batch["csd_teacher_action"].index_select(
                 0, selected_indices
             )
-            with self.amp_context:
-                csd_output = self.model(
-                    forward_inputs=csd_student_inputs,
-                    csd_only=True,
-                    csd_teacher_action=csd_teacher_action,
-                    csd_offset=self.csd_offset,
-                    compute_values=False,
-                    use_cache=False,
+            csd_teacher_action_mask = micro_batch.get("csd_teacher_action_mask")
+            if isinstance(csd_teacher_action_mask, torch.Tensor):
+                csd_teacher_action_mask = csd_teacher_action_mask.index_select(
+                    0, selected_indices
                 )
-                csd_raw_loss = csd_output["csd_loss"] * active_scale
-                csd_weighted_loss = self.csd_beta * csd_raw_loss
-                csd_scaled_loss = csd_weighted_loss / self.gradient_accumulation
+            csd_forward_kwargs = {
+                "forward_inputs": csd_student_inputs,
+                "csd_only": True,
+                "csd_teacher_action": csd_teacher_action,
+                "csd_teacher_action_mask": csd_teacher_action_mask,
+                "csd_offset": self.csd_offset,
+                "compute_values": False,
+                "use_cache": False,
+            }
+            if self.enable_online_csd:
+                with self.amp_context:
+                    csd_output = self.model(**csd_forward_kwargs)
+                    csd_raw_loss = csd_output["csd_loss"] * active_scale
+                    csd_weighted_loss = self.csd_beta * csd_raw_loss
+                    csd_scaled_loss = csd_weighted_loss / self.gradient_accumulation
 
-            csd_backward_ctx = self.before_micro_batch(
-                self.model, is_last_micro_batch=is_last
-            )
-            with csd_backward_ctx:
-                self.grad_scaler.scale(csd_scaled_loss).backward()
+                csd_backward_ctx = self.before_micro_batch(
+                    self.model, is_last_micro_batch=is_last
+                )
+                with csd_backward_ctx:
+                    self.grad_scaler.scale(csd_scaled_loss).backward()
+            else:
+                with torch.no_grad(), self.amp_context:
+                    csd_output = self.model(**csd_forward_kwargs)
+                    csd_raw_loss = csd_output["csd_loss"] * active_scale
+                    csd_weighted_loss = torch.zeros_like(csd_raw_loss)
 
             metrics_data["actor/csd_loss"] = csd_raw_loss.detach().item()
             metrics_data["actor/csd_weighted_loss"] = csd_weighted_loss.detach().item()
+            metrics_data["actor/csd_diagnostic_only"] = float(
+                self.enable_online_csd_diagnostics
+            )
             metrics_data["actor/csd_pair_count"] = min(
                 valid_pair_count, self.csd_micro_batch_size
+            )
+            metrics_data["actor/csd_candidate_pair_count"] = candidate_pair_count
+            metrics_data["actor/csd_gate_rate"] = (
+                valid_pair_count / candidate_pair_count if candidate_pair_count else 0.0
             )
             for key in [
                 "csd_action_discrepancy",

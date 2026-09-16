@@ -1,0 +1,86 @@
+defaults:
+  - env/libero_spatial@env.eval
+  - model/pi0_5@rollout.model
+  - override hydra/job_logging: stdout
+  - _self_
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  searchpath:
+    - file://${oc.env:EMBODIED_PATH}/config/
+
+cluster:
+  num_nodes: 1
+  component_placement:
+    env,rollout: ${oc.env:EVAL_GPU_RANGE}
+
+runner:
+  task_type: embodied_eval
+  logger:
+    log_path: ${oc.env:EVAL_LOG_DIR}
+    project_name: rlinf-robot-eval
+    experiment_name: ${oc.env:EVAL_NAME}
+    logger_backends: ["tensorboard"]
+  max_epochs: 1000
+  max_steps: -1
+  only_eval: true
+  val_check_interval: -1
+  save_interval: -1
+  resume_dir: null
+  ckpt_path: ${oc.env:EVAL_CKPT_PATH,""}
+  ckpt_strict: false
+
+env:
+  group_name: EnvGroup
+  eval:
+    task_suite_name: ${oc.env:EVAL_SUITE}
+    rollout_epoch: ${oc.decode:${oc.env:EVAL_ROLLOUT_EPOCH,1}}
+    total_num_envs: ${oc.decode:${oc.env:EVAL_TOTAL_ENVS,500}}
+    auto_reset: true
+    ignore_terminations: true
+    max_episode_steps: ${oc.decode:${oc.env:EVAL_EPISODE_STEPS}}
+    max_steps_per_rollout_epoch: ${oc.decode:${oc.env:EVAL_ROLLOUT_STEPS}}
+    group_size: 1
+    use_fixed_reset_state_ids: true
+    use_ordered_reset_state_ids: false
+    num_trials_per_task: ${oc.decode:${oc.env:EVAL_TRIALS_PER_TASK}}
+    is_eval: true
+    video_cfg:
+      save_video: false
+      info_on_video: false
+      video_base_dir: ${runner.logger.log_path}/video/eval
+
+rollout:
+  group_name: RolloutGroup
+  generation_backend: huggingface
+  recompute_logprobs: false
+  unnorm_key: libero_10
+  enable_offload: false
+  pipeline_stage_num: 1
+  model:
+    model_path: ${oc.env:EVAL_MODEL_PATH}
+    model_type: openpi
+    num_action_chunks: 5
+    action_dim: 7
+    num_steps: 5
+    add_value_head: false
+    openpi:
+      config_name: pi05_libero
+      num_images_in_input: 2
+      noise_level: 0.3
+      action_chunk: 5
+      num_steps: 5
+      action_env_dim: 7
+      add_value_head: false
+
+actor:
+  group_name: ActorGroup
+  seed: 42
+
+reward:
+  use_reward_model: false
+
+critic:
+  use_critic_model: false

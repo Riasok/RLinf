@@ -12,6 +12,7 @@ action_dim: 7
 # LoRA settings
 is_lora: False
 lora_rank: 32
+trainability_mask: all  # all | adarms_only | exclude_adarms
 
 # Training settings
 use_proprio: True

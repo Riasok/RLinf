@@ -50,6 +50,10 @@ algorithm:
   csd_beta: 0.05
   csd_offset: 5
   csd_micro_batch_size: 2
+  # gated-CSD ablation: constant (g=1), success, or positive_advantage.
+  # Set csd_enabled=False for plain PPO while keeping all other settings fixed.
+  csd_gate_mode: constant
+  csd_gate_threshold: 0.0
 
 
   reward_type: chunk_level

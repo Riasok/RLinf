@@ -247,6 +247,36 @@ def get_fsdp_wrap_policy(module, config=None, is_lora=False, model_type=None):
         )
         policies.append(prismatic_fsdp_wrapping_policy)
 
+    trainability_report = getattr(module, "_trainability_mask_report", None)
+    selective_mask = (
+        trainability_report.get("mode")
+        if isinstance(trainability_report, dict)
+        else None
+    )
+    if selective_mask and selective_mask != "all":
+        if config.get("use_orig_params", False):
+            raise ValueError(
+                "Selective trainability masks require fsdp_config.use_orig_params=false. "
+                "Trainable leaf wrapping provides uniform requires_grad FSDP units and "
+                "keeps actor-to-rollout state-dict synchronization compatible."
+            )
+        from torch.distributed.fsdp.wrap import lambda_auto_wrap_policy
+
+        def is_trainable_leaf(candidate):
+            direct_parameters = tuple(candidate.parameters(recurse=False))
+            return (
+                not tuple(candidate.children())
+                and bool(direct_parameters)
+                and any(parameter.requires_grad for parameter in direct_parameters)
+            )
+
+        policies.append(
+            functools.partial(
+                lambda_auto_wrap_policy,
+                lambda_fn=is_trainable_leaf,
+            )
+        )
+
     if (
         SupportedModel(model_type) == SupportedModel.CNN_POLICY
         and not config.use_orig_params

@@ -745,6 +745,7 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
         student_forward_inputs: dict[str, torch.Tensor],
         teacher_action: torch.Tensor,
         offset: int,
+        teacher_action_mask: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
         """Distill a better-informed next chunk with conditional flow matching.
 
@@ -754,6 +755,8 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
         observation. We use that aligned prefix as a detached pseudo-target and
         apply the native OpenPI conditional flow-matching loss to the current
         observation. Gradients flow only through the current student velocity.
+        Only the prefix of the future plan that was subsequently executed is
+        eligible for supervision.
         """
         student_action = student_forward_inputs["model_action"].reshape(
             -1, self.config.action_horizon, self.config.action_dim
@@ -770,9 +773,29 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
                 f"Online CSD offset must be in (0, {horizon}), got {offset}"
             )
 
-        overlap = horizon - offset
+        overlap = min(horizon - offset, offset)
+        target_action_mask = None
+        if teacher_action_mask is not None:
+            target_action_mask = teacher_action_mask.reshape(
+                teacher_action.shape[0], -1
+            ).to(device=device, dtype=torch.float32)
+            if target_action_mask.shape[-1] == 1:
+                target_action_mask = target_action_mask.expand(-1, overlap)
+            elif target_action_mask.shape[-1] < overlap:
+                raise ValueError(
+                    "CSD teacher action mask is shorter than the executed overlap."
+                )
+            target_action_mask = target_action_mask[:, :overlap]
+
         pseudo_target = student_action.clone()
-        pseudo_target[:, offset:horizon] = teacher_action[:, :overlap]
+        teacher_prefix = teacher_action[:, :overlap]
+        if target_action_mask is not None:
+            teacher_prefix = torch.where(
+                target_action_mask[:, :, None].bool(),
+                teacher_prefix,
+                student_action[:, offset : offset + overlap],
+            )
+        pseudo_target[:, offset : offset + overlap] = teacher_prefix
         flow_noise = self.sample_noise(pseudo_target.shape, device)
         flow_time = self.sample_time(pseudo_target.shape[0], device)
         time_expanded = flow_time[:, None, None]
@@ -781,22 +804,37 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
             student_forward_inputs, student_x_t, flow_time
         )
         env_dim = self.config.action_env_dim
-        student_overlap = student_velocity[:, offset:horizon, :env_dim]
+        student_overlap = student_velocity[:, offset : offset + overlap, :env_dim]
         flow_target = (
-            flow_noise[:, offset:horizon, :env_dim]
+            flow_noise[:, offset : offset + overlap, :env_dim]
             - teacher_action[:, :overlap, :env_dim]
         ).detach()
-        csd_loss = F.mse_loss(student_overlap, flow_target)
+
+        action_mask = None
+        if target_action_mask is not None:
+            action_mask = (
+                target_action_mask[:, :, None]
+                .to(dtype=student_overlap.dtype)
+                .expand_as(student_overlap)
+            )
+
+        def masked_second_moment(value: torch.Tensor) -> torch.Tensor:
+            if action_mask is None:
+                return value.square().mean()
+            denominator = action_mask.sum().clamp_min(1)
+            return (value.square() * action_mask).sum() / denominator
+
+        csd_loss = masked_second_moment(student_overlap - flow_target)
         with torch.no_grad():
-            action_discrepancy = F.mse_loss(
-                student_action[:, offset:horizon, :env_dim],
-                teacher_action[:, :overlap, :env_dim],
+            action_discrepancy = masked_second_moment(
+                student_action[:, offset : offset + overlap, :env_dim]
+                - teacher_action[:, :overlap, :env_dim]
             )
         return {
             "csd_loss": csd_loss,
             "csd_action_discrepancy": action_discrepancy,
-            "csd_flow_target_norm": flow_target.square().mean().sqrt(),
-            "csd_student_velocity_norm": student_overlap.square().mean().sqrt(),
+            "csd_flow_target_norm": masked_second_moment(flow_target).sqrt(),
+            "csd_student_velocity_norm": masked_second_moment(student_overlap).sqrt(),
         }
 
     def default_forward(
@@ -809,6 +847,7 @@ class OpenPi0ForRLActionPrediction(PI0Pytorch, BasePolicy):
                 forward_inputs,
                 kwargs["csd_teacher_action"],
                 int(kwargs["csd_offset"]),
+                kwargs.get("csd_teacher_action_mask"),
             )
         # get kwargs
         compute_values = kwargs.get("compute_values", False)
