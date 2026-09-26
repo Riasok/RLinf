@@ -6,8 +6,8 @@ ENV_FILE=${ENV_FILE:-/data/minjaeoh/.env}
 RUN_ID=${RUN_ID:-$(date +%Y%m%d-%H%M%S)}
 LOG_ROOT=${LOG_ROOT:-$ROOT/logs}
 
-SPATIAL_OUT=$LOG_ROOT/${RUN_ID}-gr00t-n15-spatial-bf16-100steps
-GOAL_OUT=$LOG_ROOT/${RUN_ID}-gr00t-n15-goal-fp32head-100steps
+SPATIAL_OUT=$LOG_ROOT/${RUN_ID}-gr00t-n15-spatial-bf16-150steps
+GOAL_OUT=$LOG_ROOT/${RUN_ID}-gr00t-n15-goal-fp32head-150steps
 
 if [[ -e "$SPATIAL_OUT" || -e "$GOAL_OUT" ]]; then
   echo "Refusing to overwrite an existing run directory for RUN_ID=$RUN_ID" >&2
@@ -38,12 +38,12 @@ run_spatial() (
   export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
   export RLINF_FORCE_LOCAL_RAY=1
 
-  printf '%s START spatial GR00T N1.5 bf16 on GPUs 0-3\n' "$(date '+%F %T %Z')" > "$SPATIAL_OUT/state.log"
+  printf '%s START spatial GR00T N1.5 bf16 150 steps on GPUs 0-3\n' "$(date '+%F %T %Z')" > "$SPATIAL_OUT/state.log"
   if "$ROOT/.venv-gr00t-n1d5/bin/python" examples/embodiment/train_embodied_agent.py \
     --config-path "$ROOT/examples/embodiment/config" \
-    --config-name libero_spatial_ppo_gr00t_n15_bf16_100steps \
+    --config-name libero_spatial_ppo_gr00t_n15_bf16_150steps \
     runner.logger.log_path="$SPATIAL_OUT/train" \
-    runner.logger.experiment_name="spatial_ppo_gr00t_n15_bf16_100steps_$RUN_ID"; then
+    runner.logger.experiment_name="spatial_ppo_gr00t_n15_bf16_150steps_$RUN_ID"; then
     printf '%s DONE\n' "$(date '+%F %T %Z')" >> "$SPATIAL_OUT/state.log"
   else
     status=$?
@@ -71,12 +71,12 @@ run_goal() (
   export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
   export RLINF_FORCE_LOCAL_RAY=1
 
-  printf '%s START goal GR00T N1.5 fp32 action head on GPUs 4-7\n' "$(date '+%F %T %Z')" > "$GOAL_OUT/state.log"
+  printf '%s START goal GR00T N1.5 fp32 action head 150 steps on GPUs 4-7\n' "$(date '+%F %T %Z')" > "$GOAL_OUT/state.log"
   if "$ROOT/.venv-gr00t-n1d5/bin/python" examples/embodiment/train_embodied_agent.py \
     --config-path "$ROOT/examples/embodiment/config" \
-    --config-name libero_goal_ppo_gr00t_n15_fp32head_100steps_20260926 \
+    --config-name libero_goal_ppo_gr00t_n15_fp32head_150steps \
     runner.logger.log_path="$GOAL_OUT/train" \
-    runner.logger.experiment_name="goal_ppo_gr00t_n15_fp32head_100steps_$RUN_ID"; then
+    runner.logger.experiment_name="goal_ppo_gr00t_n15_fp32head_150steps_$RUN_ID"; then
     printf '%s DONE\n' "$(date '+%F %T %Z')" >> "$GOAL_OUT/state.log"
   else
     status=$?

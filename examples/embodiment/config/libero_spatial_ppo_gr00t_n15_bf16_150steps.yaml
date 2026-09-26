@@ -21,14 +21,14 @@ cluster:
 runner:
   task_type: embodied
   logger:
-    log_path: "logs/20260923-gr00t-n15-spatial-ppo-bf16/train"
+    log_path: "logs/gr00t-n15-spatial-ppo-bf16-150steps/train"
     project_name: rlinf-ppo-csd
-    experiment_name: "spatial_ppo_gr00t_n15_bf16_100steps"
+    experiment_name: "spatial_ppo_gr00t_n15_bf16_150steps"
     logger_backends: ["tensorboard", "wandb"]
     wandb_entity: riasok
 
   max_epochs: 1000
-  max_steps: 100
+  max_steps: 150
 
   only_eval: False
   val_check_interval: -1
