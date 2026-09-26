@@ -84,6 +84,22 @@ def get_model(cfg: DictConfig, torch_dtype=torch.bfloat16):
         restore_npu_patches(Patcher, npu_patch_state)
 
     model.to(torch_dtype)
+
+    # Optional: keep the trainable action head in fp32 while the frozen backbone
+    # stays in the loaded dtype. GR00T N1.5's SigLIP tower hard-requires
+    # flash_attention_2, which rejects fp32, so the whole model cannot be fp32;
+    # but the action head is the only part that is trained, so fp32 masters there
+    # give fp32 optimizer state and checkpoints for the parameters that matter.
+    # Off by default. Enabled via actor.model.fp32_action_head=true; the rollout
+    # worker forces it off (inference-only, no FSDP to cast for compute).
+    if bool(cfg.get("fp32_action_head", False)):
+        model.action_head.to(torch.float32)
+        print(
+            "[gr00t] action_head cast to fp32 "
+            f"(backbone remains {torch_dtype})",
+            flush=True,
+        )
+
     if cfg.rl_head_config.add_value_head:
         # reinitialize the value head after model loading, or there are nan values in the value head after model loading.
         model.action_head.value_head._init_weights()

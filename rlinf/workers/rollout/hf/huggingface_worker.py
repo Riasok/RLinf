@@ -144,6 +144,8 @@ class MultiStepRolloutWorker(Worker):
         with open_dict(rollout_model_config):
             rollout_model_config.precision = self.cfg.rollout.model.precision
             rollout_model_config.model_path = self.cfg.rollout.model.model_path
+            # Rollout is inference-only and un-wrapped: keep one dtype throughout.
+            rollout_model_config.fp32_action_head = False
 
         self.hf_model: BasePolicy = get_model(rollout_model_config)
 

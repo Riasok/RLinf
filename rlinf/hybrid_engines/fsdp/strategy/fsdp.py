@@ -147,10 +147,18 @@ class FSDPStrategy(FSDPStrategyBase):
         param_dtype = torch_dtype_from_precision(mixed_precision_config.param_dtype)
         reduce_dtype = torch_dtype_from_precision(mixed_precision_config.reduce_dtype)
         buffer_dtype = torch_dtype_from_precision(mixed_precision_config.buffer_dtype)
+        # cast_forward_inputs: have every FSDP unit cast floating-point forward
+        # inputs to param_dtype. Needed when master params (e.g. fp32) differ from
+        # the compute dtype and a module infers its dtype from its parameters
+        # (GR00T's TimestepEncoder does `next(self.parameters()).dtype`). FSDP2
+        # already does this unconditionally; here it is opt-in, default off.
         mixed_precision = MixedPrecision(
             param_dtype=param_dtype,
             reduce_dtype=reduce_dtype,
             buffer_dtype=buffer_dtype,
+            cast_forward_inputs=bool(
+                mixed_precision_config.get("cast_forward_inputs", False)
+            ),
         )
 
         sharding_strategy = get_sharding_strategy(

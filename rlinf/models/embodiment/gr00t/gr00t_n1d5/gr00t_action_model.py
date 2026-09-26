@@ -154,6 +154,21 @@ class FlowMatchingActionHeadForRLActionPrediction(FlowmatchingActionHead):
             vl_embs.shape[0], -1, -1
         )
         sa_embs = torch.cat((state_features, future_tokens, action_features), dim=1)
+        # RLinf fp32-action-head deviation: the actor batch carries `state` in fp32,
+        # and the CategorySpecificLinear state encoder follows its input dtype, so
+        # state_features arrive in fp32 and promote the whole sequence to fp32, which
+        # then meets bf16 compute weights inside the DiT. Compute follows the backbone
+        # dtype; the fp32 masters the optimizer sees are unchanged.
+        if sa_embs.dtype != vl_embs.dtype:
+            if not getattr(self, "_rlinf_dit_cast_logged", False):
+                print(
+                    f"[gr00t] DiT input {sa_embs.dtype} -> {vl_embs.dtype} "
+                    f"(state={state_features.dtype}, future_tokens={future_tokens.dtype}, "
+                    f"action={action_features.dtype})",
+                    flush=True,
+                )
+                self._rlinf_dit_cast_logged = True
+            sa_embs = sa_embs.to(vl_embs.dtype)
 
         model_output = self.model(
             hidden_states=sa_embs,
