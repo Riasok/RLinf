@@ -178,6 +178,11 @@ class FSDPStrategy(FSDPStrategyBase):
 
         cpu_offload = CPUOffload(offload_params=self.cfg.fsdp_config.cpu_offload)
 
+        # Models may expose frozen parameters that FSDP should leave untouched
+        # (e.g. a frozen VLM backbone run under no_grad inside the policy forward).
+        ignored_states = getattr(model, "_fsdp_ignored_states", None)
+        extra_fsdp_kwargs = {"ignored_states": list(ignored_states)} if ignored_states else {}
+
         fsdp_model = FSDP(
             module=model,
             param_init_fn=init_fn,
@@ -192,6 +197,7 @@ class FSDPStrategy(FSDPStrategyBase):
             limit_all_gathers=self.cfg.fsdp_config.limit_all_gathers,
             use_orig_params=self.cfg.fsdp_config.use_orig_params,
             cpu_offload=cpu_offload,
+            **extra_fsdp_kwargs,
         )
         return fsdp_model
 

@@ -1,0 +1,44 @@
+model_type: "vlanext"
+
+# .pt checkpoint produced by VLANeXt's trainer ({model_state_dict, config}); set in the run config
+model_path: "/path/to/vlanext_checkpoint.pt"
+
+precision: null # frozen Qwen3-VL in bf16, trainable DiT head / value head in fp32 (actor); rollout sets fp32_action_head=False
+
+# Action and chunk settings
+num_action_chunks: 4   # executed per rollout step (the head predicts 8)
+action_dim: 7
+
+# LoRA settings (unused)
+is_lora: False
+lora_rank: 32
+
+# Training settings
+use_proprio: True
+num_steps: 5           # denoising steps
+add_value_head: False
+fp32_action_head: True
+
+# vlanext specific parameters (see rlinf/models/embodiment/vlanext/vlanext_action_model.py::VLANeXtRLConfig)
+vlanext:
+  repo_path: "/data/minjaeoh/RLinf/third_party/VLANeXt"
+  lmm_path: "/data/minjaeoh/RLinf/checkpoints/Qwen3-VL-2B-Instruct"
+  attn_implementation: "flash_attention_2"
+  noise_method: "flow_sde"
+  noise_level: 0.5
+  noise_anneal: False
+  num_steps: ${..num_steps}
+  action_chunk: ${..num_action_chunks}
+  action_env_dim: ${..action_dim}
+  ignore_last: False
+  image_size: 256
+  center_crop_ratio: 0.9
+  history_len: null       # null -> from checkpoint config
+  max_text_len: 256
+  normalization_suite: "libero_spatial"
+  normalization_stats_version: "original"
+  train_expert_only: True
+  train_vlm_inputs: False
+  add_value_head: ${..add_value_head}
+  value_head_hidden_sizes: [512, 256, 128]
+  value_head_activation: "relu"
